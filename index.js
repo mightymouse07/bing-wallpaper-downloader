@@ -6,8 +6,11 @@ var nconf = require('nconf');
 
 nconf.argv().env().file({ file: './config.json' });
 
+var today = new Date();
+today.setHours(0,0,0,0);
+
 nconf.defaults({
-    lastDownload: new Date().getTime() - (1000*3600*24*10) // Default to ten days ago (download 10 images to start)
+    lastDownload: today.getTime() - (1000*3600*24*10) // Default to ten days ago (download 10 images to start)
 });
 
 var getImagePaths = function(options, callback) {
@@ -19,6 +22,7 @@ var getImagePaths = function(options, callback) {
         });
 
         response.on('end', () => {
+            //console.log(`DATA ${jsonString}`)
             var data = JSON.parse(jsonString);
             for (var imgNum = 0; imgNum < data.images.length; imgNum++) {
                 var path = data.images[imgNum].url;
@@ -56,9 +60,12 @@ if (process.argv[2] === undefined) {
 
 // Calculate number of days since last download so we know
 // how many images to request.
-var today = new Date();
 var timeDiff = Math.abs(today.getTime() - nconf.get('lastDownload'));
 var imageCount = Math.floor(timeDiff / (1000 * 3600 * 24)); 
+if (imageCount === 0) {
+    console.log('Images are up to date.');
+    process.exit(0);
+}
 queryParams.n = imageCount;
 console.log(`Requesting ${imageCount} images.`);
 
@@ -73,6 +80,6 @@ getImagePaths(options, function() {
 });
 
 // Save the configuration file
-nconf.set('lastDownload', new Date().getTime());
+nconf.set('lastDownload', today.getTime());
 nconf.save();
 
