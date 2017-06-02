@@ -24,6 +24,7 @@ var getImagePaths = function(options, callback) {
         response.on('end', () => {
             //console.log(`DATA ${jsonString}`)
             var data = JSON.parse(jsonString);
+            console.log(`Received ${data.images.length} image links.`);
             for (var imgNum = 0; imgNum < data.images.length; imgNum++) {
                 var path = data.images[imgNum].url;
                 var filename = path.substring(path.lastIndexOf('/') + 1, path.length);
@@ -75,6 +76,9 @@ var options = {
     port: 80,
     json: true
 };
+
+console.log(`URI: ${options.uri}`);
+
 getImagePaths(options, function() {
     console.log('Done.');
 });
