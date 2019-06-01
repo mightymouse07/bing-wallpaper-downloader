@@ -26,8 +26,10 @@ var getImagePaths = function(options, callback) {
             var data = JSON.parse(jsonString);
             console.log(`Received ${data.images.length} image links.`);
             for (var imgNum = 0; imgNum < data.images.length; imgNum++) {
-                var path = data.images[imgNum].url;
-                var filename = path.substring(path.lastIndexOf('/') + 1, path.length);
+                var path = data.images[imgNum].url; // https://www.bing.com/th?id=OHR.HighTrestleTrail_EN-US4329190913_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp
+                var startIndex = path.indexOf('OHR.') + 4;
+                var stopIndex = path.indexOf('&rf=');
+                var filename = path.substring(startIndex, stopIndex);
                 download('https://www.bing.com' + data.images[imgNum].url, filename, function(image) {
                     console.log('downlaoded ' + image);
                 });
